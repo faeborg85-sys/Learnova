@@ -252,6 +252,110 @@
         </div>
       </div>
     </section>
+  <section class="subjects" id="subjects">
+  <style>
+    .subjects { padding: 40px 0 20px; }
+    .subjects h2 { text-align: center; font-size: 1.8rem; margin-bottom: 8px; }
+    .subjects .sub { text-align: center; color: var(--muted); margin-bottom: 24px; }
+    .subj-box { max-width: 560px; margin: 0 auto; }
+    .subj-form { display: flex; gap: 10px; margin-bottom: 12px; }
+    .subj-form input { flex: 1; min-width: 0; padding: 12px 14px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.15); background: var(--navy-light); color: var(--text); font-size: 1rem; }
+    .subj-form input:focus { outline: 2px solid var(--purple); }
+    .subj-form button { padding: 12px 20px; border: none; border-radius: 12px; color: #fff; font-weight: 600; font-size: 1rem; cursor: pointer; background: linear-gradient(90deg, var(--blue), var(--purple)); }
+    .subj-msg { color: #f87171; font-size: 0.9rem; min-height: 1.2em; margin-bottom: 10px; text-align: center; }
+    .subj-list { list-style: none; display: grid; gap: 12px; }
+    .subj-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: linear-gradient(160deg, var(--navy-light), #0e1633); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 14px 18px; }
+    .subj-name { font-weight: 600; overflow-wrap: anywhere; }
+    .subj-del { flex-shrink: 0; width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.2); background: transparent; color: var(--muted); font-size: 1rem; cursor: pointer; }
+    .subj-del:hover { color: #fff; border-color: #f87171; background: rgba(248, 113, 113, 0.15); }
+    .subj-empty { text-align: center; color: var(--muted); padding: 16px; }
+  </style>
+
+  <div class="container">
+    <h2>My subjects</h2>
+    <p class="sub">Add the subjects you study. They aren’t saved yet, so a refresh clears them.</p>
+    <div class="subj-box">
+      <div class="subj-form">
+        <input type="text" id="subjectInput" placeholder="e.g. Biology" maxlength="40" aria-label="Subject name">
+        <button type="button" id="addSubjectBtn">Add</button>
+      </div>
+      <p class="subj-msg" id="subjectMsg"></p>
+      <ul class="subj-list" id="subjectList"></ul>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var subjects = [];
+      var input = document.getElementById('subjectInput');
+      var addBtn = document.getElementById('addSubjectBtn');
+      var list = document.getElementById('subjectList');
+      var msg = document.getElementById('subjectMsg');
+
+      function render() {
+        list.innerHTML = '';
+        if (subjects.length === 0) {
+          var empty = document.createElement('li');
+          empty.className = 'subj-empty';
+          empty.textContent = 'No subjects yet. Add your first one above.';
+          list.appendChild(empty);
+          return;
+        }
+        subjects.forEach(function (name, index) {
+          var li = document.createElement('li');
+          li.className = 'subj-item';
+
+          var label = document.createElement('span');
+          label.className = 'subj-name';
+          label.textContent = name;
+
+          var del = document.createElement('button');
+          del.type = 'button';
+          del.className = 'subj-del';
+          del.textContent = '✕';
+          del.setAttribute('aria-label', 'Delete ' + name);
+          del.addEventListener('click', function () {
+            if (confirm('Delete "' + name + '"? This cannot be undone.')) {
+              subjects.splice(index, 1);
+              render();
+            }
+          });
+
+          li.appendChild(label);
+          li.appendChild(del);
+          list.appendChild(li);
+        });
+      }
+
+      function addSubject() {
+        var name = input.value.trim();
+        msg.textContent = '';
+        if (name === '') {
+          msg.textContent = 'Please type a subject name first.';
+          return;
+        }
+        var exists = subjects.some(function (s) {
+          return s.toLowerCase() === name.toLowerCase();
+        });
+        if (exists) {
+          msg.textContent = 'You already have that subject.';
+          return;
+        }
+        subjects.push(name);
+        input.value = '';
+        render();
+        input.focus();
+      }
+
+      addBtn.addEventListener('click', addSubject);
+      input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') { addSubject(); }
+      });
+
+      render();
+    })();
+  </script>
+</section>  
   </main>
 
   <footer>
